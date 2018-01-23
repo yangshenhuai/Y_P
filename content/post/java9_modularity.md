@@ -6,14 +6,12 @@ tags: ["Java"]
 author: "Peter Yang"
 ---
 
-# Java9 模块化
-
 Java9 今年[九月份][1]就要正式发布了，这次发布最大的change就是模块化，这也可能是Java问世以来改变最大的一次版本发布.因为整个jdk都被模块化了 之前 "大而全" 的rt.jar(runtime)终于寿终正寝,取而代之的是很多个相对独立的模块.模块化的Java提供了`更强的封装`,使程序员使用`定义良好的接口`来相互调用 并且要`显式声明依赖`,这些都能保证开发中避免遇到不必要的错误.
-
+# JDK9 modules
 在Java9之前，在 `$JAVA_HOME/jre/lib` 中有一个很大的`rt.jar`(60M左右),里面包含了所有Java自己的类（比如`java.lang.List`,`java.lang.String`等）,当你的App（就算只是Hello world）启动的时候 JVM都会load rt.jar里面所有的class,即使你用不到里面的有些class（比如说 `awt` 或 `applet`）.
 
 Java9没有rt.jar,取而代之的是很多modules，在`$JAVA_HOME/jmods`目录下可以看到有90多个module,从下图可以看到这些module之间的依赖关系，所有的module都默认depend on java.base ![][2]
-
+# module-info.java
 每个module都要有一个`module-info.java`去定义module,下面是java.sql的module-info.java文件
 
 
@@ -30,7 +28,8 @@ Java9没有rt.jar,取而代之的是很多modules，在`$JAVA_HOME/jmods`目录�
 
 在module-info.java中用`module`关键字去定义module,后面跟module的名字,然后用 `exports` 关键字去声明当前module会暴露哪些包里面的类, 如果module里的一个包没有用`exports`来暴露,即使这个包里的类和方法都是public的，其它的module依旧引用不到 .用 `requires` 关键字去声明当前的module依赖哪些module
 
-用Java9创建一个Hello world，先创建一个类似下面这样的目录结构 ![][3] module-info.java 里面的内容如下,`requires java.base`是可以省略的，因为Java默认会加上这句 ,Main.java 就是写了一个main 方法打印Hello world！
+# 创建第一个简单的module
+用Java9创建一个Hello world，先创建一个类似下面这样的目录结构 ![][3] module-info.java 里面的内容如下,`requires java.base`是可以省略的，因为Java默认会加上这句 ,Main.java 就是写一个main 方法打印Hello world！
 
 
     module hello {  
@@ -47,7 +46,7 @@ Java9没有rt.jar,取而代之的是很多modules，在`$JAVA_HOME/jmods`目录�
     $ java --module-path out -m hello/com.hello.Main  
     Hello world!  
 
-
+# 创建有依赖关系的module
 上边创建的只是简单的单一的module,下面看下如何创建两个有依赖关系的module.创建类似下面的目录 ![][4] 在`hello` module 中的`Main` 类中调用 print_service module中的PrintService.
 
 hello module的module-info.java
@@ -115,6 +114,7 @@ hello module 中的 Main.java
 
 同样的如果在module `hello` 的module-info.java文件中不声明`requires print_service` 就对PrintService 进行调用，一样会报`package com.print is not visible`. 只有在 moudle `hello` 的 module-info.java中加上 `requires print_service`,在hello里面的类可以访问所有print_service `exports出来的所有public type` 并且用`requires` Readablity**不是**传递的, 如果想要Readablity是传递的话，要用 `requires transitive`，如下图这样配置我们的application只要requires了`java.sql`就自动可以用`java.logging`里面暴露的类了 ![][5]
 
+# Serivces
 上面的例子其实break了[`SOLID`][6]原则中的`D(面向接口而不是实现编程)`.可以考虑用`工厂模式`去解决这个问题， 但是如果使用工厂模式,工厂依然在编译时需要知道你 的所有实现, 所以不能完全解决这个问题. 其实Java9提供了`Services`来解决这个问题, 下面可以通过例子看下到底怎么用`Services`隔离接口和实现.
 
 首先将上边的例子扩展一下. `hello` 依旧是作为服务调用方,又叫`Consumer`,将原来的 print_service 改成 `print_service_api`,这将是`API-Only`的module,严格来说这个module里面应该 只包含interface,但实际上你可以放任何类在 `print_service_api` module中,然后加两个具体的服务实现的module:`print_service_A`和`print_service_B` ,这两个module也叫做 `Provider`.修改后整个项目的目录结构如下 ![][7]
