@@ -6,7 +6,7 @@ tags: ["Raspberrypi"]
 author: "Peter Yang"
 ---
 
-Last week,I joined Ericsson CGC hackathon 2017. We(team HotLadies) did a simple but interesting project using Raspberrypi,Arduino and several sensors.
+Last week,I joined a hackathon . We did a simple but interesting project using Raspberrypi,Arduino and several sensors.
 # Idea
 The Idea is simple. Using `Raspberrypi`,`Arduino` and `sensors` to collect data and send the data to `Wechat` Here's how system works. ![][1]
 
