@@ -58,7 +58,7 @@ Control Plane是控制整个集群的，它包含下面几个组件，API Server
 
 work node 会包含下面几个组件，容器运行时（docker，rkt）用来运行容器化的应用。 kubelet用来和API Server交互并且管理运行在node上的容器。 kube-proxy是一个应用组件之间的一个负载均衡
 
-##在k8s集群种运行一个应用
+## 在k8s集群种运行一个应用
 基本上就是将一个应用的描述提交给API Server， Scheduler会将一组指定的容器分配给各个node（根据容器所需要的资源和work node种可用的资源），node接收到指令后，kubelet会去拉取指定的镜像并且运行它。
 
 ![][2]
