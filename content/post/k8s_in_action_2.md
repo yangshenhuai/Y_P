@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes in action(读书 2)--Pod（WIP）"
-date: 2018-07-09T00:00:47+08:00
+date: 2018-07-13T00:00:47+08:00
 draft: false
 tags: ["Kubernetes","book"]
 author: "Peter Yang"
@@ -15,9 +15,70 @@ Pod 在K8s里面是最基础的部署单元，Pod里面可以包含一个或多�
 
 # 用YAML创建Pod
 
-K8s里面的resource一般都可以用YAML或者是Json描述文件来创建， 在创建之前， 我们可以找一个已经存在的Pod，然后看下他的YAML是啥样的,在k8s集群执行这个命令
+K8s里面的resource一般都可以用YAML(推荐)或者是Json描述文件来创建.这些描述文件一般都包含一下几个部分
 
-	$ kubectl get po $pod_name -o yaml
+* Metadata 包括名字，命名空间，标签及其他的元数据
+* Spec 包含对Pod内容的描述，例如container的镜像，Volumn 或者其他的数据
+* Status，这就是Pod运行时的一些信息， 在定义Pod时是不需要的，但查看已经运行的Pod可以看到这块信息，包括Container的status，IP等信息
+
+下面是一个最简单的YAML
+
+	apiVersion: v1 #这个指定的是K8s API的版本
+	kind: Pod   #这个文件描述的是Pod
+	metadata:
+	name: kubia-manual #Pod的名字
+	spec:
+	containers:
+	- image: luksa/kubia #指定镜像（可以有多个）
+	name: kubia	#container的名字（可省略）
+	ports:
+	- containerPort: 8080 #暴露的端口（可省略）
+	protocol: TCP
+ 
+上边指定了端口，但这个只是明确的表示这个Pod会监听的端口，实际上省略这个`containerPort` 并不会对Client端连接产生任何的影响，只不过别人想用的时候，要用`kubectl explain` 命令找到你暴露的端口
+
+下边是几个跟pod有关的`kubectl`命令
+
+	kubectl get po $podName -o ymal  #以ymal的方式展示pod的详细信息
+	kubectl get pods   #显示当前所有的pod
+	kubectl logs $podName #显示Pod里面container的log
+	kubectl port-forward $podName 8888:8080 #将本地的8888端口映射到Pod内部的8080 端口，所以执行完这个命令后，访问localhost:8888 会 访问到 Pod内部的8080 端口,如下图所示
+
+![][2]
+
+# 给Pod打标签
+实际上K8s里面所有的资源和组件都可以打标签，打标签的目的就是为了更容易的找到想找的东西， 当你的系统比较大或者复杂的时候正确的打标签就非常有必要，否则会很难管理。
+
+简单的说标签(`label`)就是就是任意的键值对，你可以把这键值对attach到任意的resource上，然后可以用`label selector`做选择，一个resource上边可能有很多个标签。可以在创建的资源的时候给资源打标签， 当然也可以update已有资源的标签。下面就是创建Pod的时候指定了标签
+
+	apiVersion: v1
+	kind: Pod
+	metadata:
+	name: kubia-manual
+	labels:  #标签
+		creation_method: manual #当创建这个pod的时候，这俩标签就会attach到这个pod上
+		env: pod
+	spec:
+	containers:
+	- image: luksa/kubia
+	name: kubia
+	ports:
+	- containerPort: 8080
+	protocol: TCP
+
+用kubectl创建上边的pod
+
+	kubectl apply -f kubia-manual-with-labels.yaml
+
+然后下面几个是跟标签有关的命令
+	
+	kubectl get po --show-labels #列出所有的pods，会列出pod的label
+	kubectl label po kubia-manual creation_method=manual ，这个是给kubia-manual这个pod打上一个标签 creation_method, 值是manul
+	kubectl label po kubia-manual-v2 env=debug --overwrite #这是覆盖 pod kubia-manual-v2 的 env 标签将值改成debug
+
+# 用标签选择Pod
+K8s提供了用标签选择Pod的灵活方式
 
 
 [1]: /img/pod_network.png
+[2]: /img/pod_port_forward.png
