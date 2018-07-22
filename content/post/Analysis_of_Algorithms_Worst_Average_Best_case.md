@@ -2,7 +2,7 @@
 title: "算法分析(最坏，平均和最好情况)"
 date: 2018-07-22T00:21:47+08:00
 draft: false
-tags: ["algorithms"，"geeksforgeeks"]
+tags: ["algorithms","geeksforgeeks"]
 author: "Peter Yang"
 ---
 
@@ -66,8 +66,6 @@ author: "Peter Yang"
 # 参考
 
 [MIT’s Video lecture 1 on Introduction to Algorithms.](http://www.youtube.com/watch?v=JPyuH4qXLZ0)
-
-
 
 
 [1]: /img/avg_case_time.PNG
