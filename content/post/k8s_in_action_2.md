@@ -77,7 +77,36 @@ K8s里面的resource一般都可以用YAML(推荐)或者是Json描述文件来�
 	kubectl label po kubia-manual-v2 env=debug --overwrite #这是覆盖 pod kubia-manual-v2 的 env 标签将值改成debug
 
 # 用标签选择Pod
-K8s提供了用标签选择Pod的灵活方式
+K8s提供了用标签选择Pod的灵活方式,`label selector` 可以提供让你选择一些符合特定标签的pods进行操作，一个`label selector`就是一个选择条件,可以有以下的使用方式
+
+* 选择包含(或者不包含)某些标签的pod
+* 选择包含某些标签和值的pod
+* 选择包含某些标签但是值不等于某个给定值的pod
+
+下面用命令展示一下`label selector`的用法 
+
+	kubectl get po -l env #选择有env这个标签的pod
+	kubectl get po -l '!env' #选择不含有env这个标签的pod
+	kubectl get po -l creation_method=manual #选择creation_method是manual的pod
+	kubectl get po -l app=pc,rel=beta #选择app=pc并且rel=beta的pod（多个pod同时使用的情况）
+
+# 选择node执行
+刚才是说了怎么用`label`来选择pod了， 但其实k8s中所有的resource 都可以加标签，也可以用`label selector` 来选择，比如说我集群中有些虚拟机配置比较好(有gpu 等) 但有些是比较老旧的机器， 这是侯可以用`label` 来给这些node打标签， 当要调度某些应用的时候可以指定部署到哪种类型的机器上
+
+	kubectl label node gke-kubia-85f6-node-0rrx gpu=true #给node gke-kubia-85f6-node-0rrx 打上标签 gpu=true
+
+现在比如说我有个挖矿的应用需要部署到有gpu的node上去，就可以用下面这种方式去指定部署到哪种node上
+
+	apiVersion: v1
+	kind: Pod
+	metadata:
+		name: kubia-gpu
+	spec:
+		nodeSelector:
+			gpu: "true"  #这个nodeSelector可以指定这个pod会schedule到有gpu的node上面去
+	containers:
+	- image: luksa/kubia
+		name: kubia
 
 
 [1]: /img/pod_network.png
