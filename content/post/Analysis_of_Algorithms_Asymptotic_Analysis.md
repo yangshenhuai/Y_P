@@ -8,6 +8,7 @@ author: "Peter Yang"
 
 翻译自[GeeksforGeeks](https://www.geeksforgeeks.org/analysis-of-algorithms-set-1-asymptotic-analysis/)
 
+
 # 为什么需要性能分析
 对一个程序来说， 有很多需要考虑的地方，比如用户友好性，模块化，安全性，可维护性等等，为什么还要考虑性能呢？
 
@@ -31,7 +32,7 @@ author: "Peter Yang"
 
 所以用渐进分析我们就没法判断哪个方法好一点，因为我们在渐进分析中会忽略常量。还有一种可能是你的软件永远都 不会有数据量比较大的输入参数，所以你可以选择一种适合你的应用场景的算法，即使这个算法可能渐进分析值比较慢，但可能在你的那个场景中它就是最快的算法。
 
-#参考
+# 参考
 [MIT’s Video lecture 1 on Introduction to Algorithms.](http://www.youtube.com/watch?v=JPyuH4qXLZ0)
 
 
