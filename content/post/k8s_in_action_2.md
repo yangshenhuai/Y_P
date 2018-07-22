@@ -1,5 +1,5 @@
 ---
-title: "Kubernetes in action(读书 2)--Pod（WIP）"
+title: "Kubernetes in action(读书 2)--Pod"
 date: 2018-07-13T00:00:47+08:00
 draft: false
 tags: ["Kubernetes","book"]
