@@ -9,4 +9,4 @@ author: "Peter Yang"
 
 ![][1]
 
-[1]: /img/k8s-nodes.png
+[1]: /img/keyboard.jpg
